@@ -1,0 +1,144 @@
+{
+    "explainVersion" : "1",
+    "stages" : [
+        {
+            "$cursor" : {
+                "queryPlanner" : {
+                    "namespace" : "TestDataOps.Carros",
+                    "indexFilterSet" : false,
+                    "parsedQuery" : {
+                        "Montadora" : {
+                            "$in" : [
+                                "Chevrolet",
+                                "Ford",
+                                "Honda",
+                                "Renault",
+                                "Volkswagen"
+                            ]
+                        }
+                    },
+                    "queryHash" : "2C4EDA52",
+                    "planCacheKey" : "2C4EDA52",
+                    "maxIndexedOrSolutionsReached" : false,
+                    "maxIndexedAndSolutionsReached" : false,
+                    "maxScansToExplodeReached" : false,
+                    "winningPlan" : {
+                        "stage" : "PROJECTION_DEFAULT",
+                        "transformBy" : {
+                            "Carro" : 1,
+                            "Cor" : 1,
+                            "Montadora" : 1,
+                            "Montadora_info.País" : 1,
+                            "_id" : 0
+                        },
+                        "inputStage" : {
+                            "stage" : "COLLSCAN",
+                            "filter" : {
+                                "Montadora" : {
+                                    "$in" : [
+                                        "Chevrolet",
+                                        "Ford",
+                                        "Honda",
+                                        "Renault",
+                                        "Volkswagen"
+                                    ]
+                                }
+                            },
+                            "direction" : "forward"
+                        }
+                    },
+                    "rejectedPlans" : [
+
+                    ]
+                }
+            }
+        },
+        {
+            "$lookup" : {
+                "from" : "Montadoras",
+                "as" : "Montadora_info",
+                "localField" : "Montadora",
+                "foreignField" : "Montadora"
+            }
+        },
+        {
+            "$project" : {
+                "Cor" : true,
+                "Montadora" : true,
+                "Carro" : true,
+                "País" : {
+                    "$arrayElemAt" : [
+                        "$Montadora_info.País",
+                        {
+                            "$const" : 0.0
+                        }
+                    ]
+                },
+                "_id" : false
+            }
+        }
+    ],
+    "serverInfo" : {
+        "host" : "DESKTOP-DENQKRP",
+        "port" : 27017,
+        "version" : "6.0.4",
+        "gitVersion" : "44ff59461c1353638a71e710f385a566bcd2f547"
+    },
+    "serverParameters" : {
+        "internalQueryFacetBufferSizeBytes" : 104857600,
+        "internalQueryFacetMaxOutputDocSizeBytes" : 104857600,
+        "internalLookupStageIntermediateDocumentMaxSizeBytes" : 104857600,
+        "internalDocumentSourceGroupMaxMemoryBytes" : 104857600,
+        "internalQueryMaxBlockingSortMemoryUsageBytes" : 104857600,
+        "internalQueryProhibitBlockingMergeOnMongoS" : 0,
+        "internalQueryMaxAddToSetBytes" : 104857600,
+        "internalDocumentSourceSetWindowFieldsMaxMemoryBytes" : 104857600
+    },
+    "command" : {
+        "aggregate" : "Carros",
+        "pipeline" : [
+            {
+                "$match" : {
+                    "Montadora" : {
+                        "$in" : [
+                            "Chevrolet",
+                            "Volkswagen",
+                            "Ford",
+                            "Renault",
+                            "Honda"
+                        ]
+                    }
+                }
+            },
+            {
+                "$lookup" : {
+                    "from" : "Montadoras",
+                    "localField" : "Montadora",
+                    "foreignField" : "Montadora",
+                    "as" : "Montadora_info"
+                }
+            },
+            {
+                "$project" : {
+                    "_id" : 0.0,
+                    "Carro" : 1.0,
+                    "Cor" : 1.0,
+                    "Montadora" : 1.0,
+                    "País" : {
+                        "$arrayElemAt" : [
+                            "$Montadora_info.País",
+                            0.0
+                        ]
+                    }
+                }
+            }
+        ],
+        "allowDiskUse" : false,
+        "maxTimeMS" : 0,
+        "cursor" : {
+
+        },
+        "$db" : "TestDataOps"
+    },
+    "ok" : 1.0
+}
